@@ -1,72 +1,79 @@
-todos = []
+class TaskManager:
+    def __init__(self):
+        self.todos = []
 
-while True :
+    def add_task(self, task_name):
+        self.todos.append({"task": task_name, "status": "pending"})
+        return f"'{task_name}' added successfully!"
 
-    choice = print('''
-    Welcome to Todo app
-         
-    1. Add a task
-    2. View tasks
-    3. Edit task
-    4. Complete a task
-    5. Remove a task
-    6. Exit the app  ''')
-  
-    choice =  input("Enter option: ")
-    
-    if choice == "1" :
-        task = input("Enter new task : ")
-        todos.append({"task": task, "status": "pending"})
-        print(f"{task} added sucessfully")
+    def display_tasks(self):
+        if not self.todos:
+            print("\nNo todos found. Add one!")
+            return False
+        
+        print("\n--- Your Todos ---")
+        for i, todo in enumerate(self.todos, start=1):
+            status = "✓" if todo["status"] == "completed" else " "
+            print(f"{i}. [{status}] {todo['task']}")
+        return True
 
-    elif choice == "2" :
-        if len(todos) == 0:
-            print("No todos found, add todo")
-        else :
-            print('Your Todos')
-            for i, todo in  enumerate(todos, start=1):
-                print(f"{i}. {todo['task']} [{todo['status']}]")
+    def edit_task(self, index, new_name):
+        if 0 <= index - 1 < len(self.todos):
+            self.todos[index - 1]["task"] = new_name
+            return True
+        return False
+
+    def complete_task(self, index):
+        if 0 <= index - 1 < len(self.todos):
+            self.todos[index - 1]["status"] = "completed"
+            return True
+        return False
+
+    def remove_task(self, index):
+        if 0 <= index - 1 < len(self.todos):
+            removed = self.todos.pop(index - 1)
+            return removed["task"]
+        return None
+
+manager = TaskManager()
+
+while True:
+    print("\n1. Add | 2. View | 3. Edit | 4. Complete | 5. Remove | 6. Exit")
+    choice = input("Enter option: ")
+
+    if choice == "1":
+        name = input("Task name: ")
+        print(manager.add_task(name))
+
+    elif choice == "2":
+        manager.display_tasks()
 
     elif choice == "3":
-        if len(todos) == 0:
-            print("No todos found, add todo")
-        else :
-            print('Your Todos')
-            for i, todo in  enumerate(todos, start=1):
-                print(f"{i}. {todo['task']} [{todo['status']}]")
-          
-            i= int(input("Enter the task number you want to Edit: ")) -1
-            if 0 <= i < len(todos):
-                task = input("Enter new task : ")
-                todos[i]["task"] = task
-                print(f"{task} edited sucessfully")
+        if manager.display_tasks():
+            num = int(input("Task number to edit: "))
+            new_name = input("New task name: ")
+            if manager.edit_task(num, new_name):
+                print("Edit successful!")
+            else:
+                print("Invalid number.")
 
     elif choice == "4":
-        if len(todos) == 0:
-            print("No todos found, add todo")
-        else :
-            print('Your Todos')
-            for i, todo in  enumerate(todos, start=1):
-                print(f"{i}. {todo['task']} [{todo['status']}]")
-          
-            i= int(input("Enter the task number you want to mark complete: ")) -1
-            if 0 <= i < len(todos):
-                todos[i]["status"] = "completed"
-                print(f"'{todos[i]['task']}' marked as completed")
+        if manager.display_tasks():
+            num = int(input("Task number to complete: "))
+            if manager.complete_task(num):
+                print("Task marked done!")
+            else:
+                print("Invalid number.")
 
     elif choice == "5":
-    
-        if len(todos) == 0:
-            print("No todos found, add todo")
-        else :
-            print('Your Todos')
-            for i, todo in  enumerate(todos, start=1):
-                print(f"{i}. {todo['task']} [{todo['status']}]")
-          
-            i= int(input("Enter the task number you want to remove: ")) -1
-            if 0 <= i < len(todos) :
-                final_task = todos.pop(i)
-                print(f"'{final_task['task']}' removed sucessfully")
+        if manager.display_tasks():
+            num = int(input("Task number to remove: "))
+            task_name = manager.remove_task(num)
+            if task_name:
+                print(f"Removed: {task_name}")
+            else:
+                print("Invalid number.")
 
     elif choice == "6":
-           break
+        print("Goodbye!")
+        break
